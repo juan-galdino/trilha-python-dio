@@ -9,7 +9,7 @@ def main():
     extrato = ""
     numero_saques = 0
     LIMITE_SAQUES = 3
-
+    usuarios = []
 
     menu = f"""
 
@@ -22,6 +22,8 @@ def main():
     [d] Depositar
     [s] Sacar
     [e] Extrato
+    [c] Criar usuário
+    [n] Nova conta
     [q] Sair
 
     => """
@@ -43,10 +45,13 @@ def main():
 
 
         elif opcao == "e":
-            print("\n================ EXTRATO ================")
-            print("Não foram realizadas movimentações." if not extrato else extrato)
-            print(f"\nSaldo: R$ {saldo:.2f}")
-            print("==========================================")
+            mostrar_extrato(saldo, extrato=extrato)
+        
+        elif opcao == "c":
+            criar_usuarios(usuarios)
+
+        elif opcao == "a":
+            criar_conta()
 
         elif opcao == "q":
             break
@@ -100,5 +105,38 @@ def sacar(*, saldo, limite, numero_saques, limite_saques):
     else:
         print("Operação falhou! O valor informado é inválido.")
         print(mensagem())
-        
+
+
+def mostrar_extrato(saldo, /, *, extrato):
+    print(" EXTRATO ".center(50,"="))
+    print("Não foram realizadas movimentações." if not extrato else extrato)
+    print(f"\nSaldo: R$ {saldo:.2f}")
+    print("=".center(50,"="))
+
+def criar_usuarios(usuarios):
+    novo_usuario = {}
+    novo_usuario["cpf"] = input("CPF: ")
+    logradouro = ""
+    numero = ""
+    bairro = ""
+    cidade = ""
+    estado = ""
+
+    if novo_usuario in usuarios:
+        print("\nEsse CPF já possui cadastro, utilize outro.")
+        criar_usuarios(usuarios)
+
+    novo_usuario["nome"] = input("Nome: ")
+    novo_usuario["data_nascimento"] = input("Data de nascimento: ")
+    logradouro = input("Rua: ")
+    numero = input("N°: ")
+    bairro = input("Bairro: ")
+    novo_usuario["endereco"] = f"{logradouro}, {numero} - {bairro} - {cidade}/{estado}"
+    usuarios.append(novo_usuario)
+    print("\nUsuário cadastrado com sucesso!")
+
+
+def criar_conta():
+    print("Criando conta")
+
 main()
