@@ -17,7 +17,7 @@ def main():
     {" Sistema Bancário DIO ".center(50,"=")}
     {"=".center(50,"=")}
 
-    Olá, Usuário. O que você quer fazer hoje?
+    Olá! O que você quer fazer hoje?
 
     [d] Depositar
     [s] Sacar
@@ -48,10 +48,10 @@ def main():
             mostrar_extrato(saldo, extrato=extrato)
         
         elif opcao == "c":
-            criar_usuarios(usuarios)
+            cadastrar_usuarios(usuarios)
 
-        elif opcao == "a":
-            criar_conta()
+        elif opcao == "n":
+            usuarios = nova_conta(usuarios)
 
         elif opcao == "q":
             break
@@ -67,11 +67,11 @@ def deposito(saldo, extrato, /):
         extrato += f"Depósito: R$ {valor:.2f}\n"
         print(f"Depositado o valor de {valor:.2f} com sucesso!\n\n")
         print(f"Saldo Atual: {saldo}\n")
-        print(print(mensagem()))
+        print(mensagem())
 
     else:
         print("Operação falhou! O valor informado é inválido.\n")
-        print(print(mensagem()))
+        print(mensagem())
 
     return saldo, extrato
 
@@ -113,30 +113,50 @@ def mostrar_extrato(saldo, /, *, extrato):
     print(f"\nSaldo: R$ {saldo:.2f}")
     print("=".center(50,"="))
 
-def criar_usuarios(usuarios):
+def cadastrar_usuarios(usuarios):
     novo_usuario = {}
-    novo_usuario["cpf"] = input("CPF: ")
     logradouro = ""
     numero = ""
     bairro = ""
     cidade = ""
     estado = ""
 
+    novo_usuario["cpf"] = int(input("CPF: "))
+    
     if novo_usuario in usuarios:
         print("\nEsse CPF já possui cadastro, utilize outro.")
-        criar_usuarios(usuarios)
+        cadastrar_usuarios(usuarios)
 
     novo_usuario["nome"] = input("Nome: ")
     novo_usuario["data_nascimento"] = input("Data de nascimento: ")
     logradouro = input("Rua: ")
     numero = input("N°: ")
     bairro = input("Bairro: ")
+    cidade = input("Cidade: ")
+    estado = input("Sigla Estado: ")
     novo_usuario["endereco"] = f"{logradouro}, {numero} - {bairro} - {cidade}/{estado}"
     usuarios.append(novo_usuario)
     print("\nUsuário cadastrado com sucesso!")
 
+def nova_conta(usuarios):
+    if not usuarios:
+        print("\nNenhum usuário em nossa base, selecione a opção do menu para cadastrar um usuário.\n")
+        print(mensagem())
+        return
 
-def criar_conta():
-    print("Criando conta")
+    cpf_check = int(input("Informe o CPF do usuário: "))
+    usuario_com_conta = {}    
+
+    for usuario in usuarios:
+        if cpf_check == usuario['cpf']:
+            agencia = 0001
+
+            break
+        else:
+            print("\nNenhum usuário cadastrado com esse CPF.\n")
+            print("\nDica: Tente outro CPF...\n")
+            nova_conta(usuarios)
+
+    return usuarios # Adicionar ao usuário antigo sem conta a conta de usuario_com_conta
 
 main()
