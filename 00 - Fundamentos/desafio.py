@@ -1,7 +1,7 @@
 import textwrap
 
 def mensagem():
-    return "\nRetornando ao menu... \n"
+    print("\nRetornando ao menu... \n")
 
 def main():
     saldo = 0
@@ -9,7 +9,7 @@ def main():
     extrato = ""
     numero_saques = 0
     LIMITE_SAQUES = 3
-    usuarios = []
+    usuarios = [{'cpf': '2', 'nome': '', 'data_nascimento': '', 'endereco': ',  -  - /'}, {'cpf': '3', 'nome': '', 'data_nascimento': '', 'endereco': ',  -  - /'}]
 
     menu = f"""
 
@@ -23,7 +23,8 @@ def main():
     [s] Sacar
     [e] Extrato
     [c] Criar usuário
-    [n] Nova conta
+    [n] Nova Conta
+    [l] Listar Contas 
     [q] Sair
 
     => """
@@ -48,7 +49,7 @@ def main():
             mostrar_extrato(saldo, extrato=extrato)
         
         elif opcao == "c":
-            cadastrar_usuarios(usuarios)
+            usuarios = cadastrar_usuarios(usuarios)
 
         elif opcao == "n":
             usuarios = nova_conta(usuarios)
@@ -67,11 +68,11 @@ def deposito(saldo, extrato, /):
         extrato += f"Depósito: R$ {valor:.2f}\n"
         print(f"Depositado o valor de {valor:.2f} com sucesso!\n\n")
         print(f"Saldo Atual: {saldo}\n")
-        print(mensagem())
+        mensagem()
 
     else:
         print("Operação falhou! O valor informado é inválido.\n")
-        print(mensagem())
+        mensagem()
 
     return saldo, extrato
 
@@ -86,26 +87,25 @@ def sacar(*, saldo, limite, numero_saques, limite_saques):
 
     if excedeu_saldo:
         print("Operação falhou! Você não tem saldo suficiente.")
-        print(mensagem())
+        mensagem()
 
     elif excedeu_limite:
         print("Operação falhou! O valor do saque excede o limite.")
-        print(mensagem())
+        mensagem()
 
     elif excedeu_saques:
         print("Operação falhou! Número máximo de saques excedido.")
-        print(mensagem())
+        mensagem()
 
     elif valor > 0:
         saldo -= valor
         extrato += f"Saque: R$ {valor:.2f}\n"
         numero_saques += 1
-        print(mensagem())
+        mensagem()
 
     else:
         print("Operação falhou! O valor informado é inválido.")
-        print(mensagem())
-
+        mensagem()
 
 def mostrar_extrato(saldo, /, *, extrato):
     print(" EXTRATO ".center(50,"="))
@@ -114,19 +114,34 @@ def mostrar_extrato(saldo, /, *, extrato):
     print("=".center(50,"="))
 
 def cadastrar_usuarios(usuarios):
+    cpf_check = input("CPF: ")
+
+    if len(usuarios) == 0:
+        usuarios.append(adiciona_usuario(cpf_check))
+        return usuarios
+    
+    lista_cpfs = []
+    for usuario in usuarios:
+        lista_cpfs.append(usuario['cpf'])
+        
+
+    if cpf_check in lista_cpfs:
+        print("\nEsse CPF já possui cadastro, por favor tente outro.")
+        return usuarios
+    else:
+        usuarios.append(adiciona_usuario(cpf_check))
+        return usuarios
+
+
+def adiciona_usuario(cpf):
     novo_usuario = {}
     logradouro = ""
     numero = ""
     bairro = ""
     cidade = ""
     estado = ""
-
-    novo_usuario["cpf"] = int(input("CPF: "))
     
-    if novo_usuario in usuarios:
-        print("\nEsse CPF já possui cadastro, utilize outro.")
-        cadastrar_usuarios(usuarios)
-
+    novo_usuario["cpf"] = cpf
     novo_usuario["nome"] = input("Nome: ")
     novo_usuario["data_nascimento"] = input("Data de nascimento: ")
     logradouro = input("Rua: ")
@@ -135,28 +150,48 @@ def cadastrar_usuarios(usuarios):
     cidade = input("Cidade: ")
     estado = input("Sigla Estado: ")
     novo_usuario["endereco"] = f"{logradouro}, {numero} - {bairro} - {cidade}/{estado}"
-    usuarios.append(novo_usuario)
+
     print("\nUsuário cadastrado com sucesso!")
+    mensagem()
+    return novo_usuario
 
 def nova_conta(usuarios):
+    print(usuarios)
+    
     if not usuarios:
-        print("\nNenhum usuário em nossa base, selecione a opção do menu para cadastrar um usuário.\n")
-        print(mensagem())
-        return
+        print("\nNenhum usuário em nossa base, selecione a opção 'c' do menu para cadastrar um usuário.\n")
+        mensagem()
+        return usuarios
+    
+    agencia = "0001"
+    cpf_check = input("Informe o CPF do usuário: ")
+    lista_cpfs = [usuario["cpf"] for usuario in usuarios]
 
-    cpf_check = int(input("Informe o CPF do usuário: "))
-    usuario_com_conta = {}    
+    if cpf_check not in lista_cpfs:
+            print("\nNenhum usuário cadastrado com esse CPF.\n")
+            mensagem()
+    else:
+        for usuario in usuarios:
+            if usuario["cpf"] == cpf_check:
+                lista_chaves = list(usuario.keys())
 
-    for usuario in usuarios:
-        if cpf_check == usuario['cpf']:
-            agencia = 0001
+                if "contas" not in lista_chaves:
+                    usuario["contas"] = [{
+                        "conta": 1,
+                        "agencia": agencia
+                    }]
+                    print("\nConta 1 criada com sucesso!\n")
+                else:
+                    numero_contas = len(usuario.get("contas"))
+
+                    usuario["contas"].append({
+                        "conta": numero_contas + 1,
+                        "agencia": agencia
+                    })
+                    print(f"\nConta {numero_contas + 1} criada com sucesso!\n")
 
             break
-        else:
-            print("\nNenhum usuário cadastrado com esse CPF.\n")
-            print("\nDica: Tente outro CPF...\n")
-            nova_conta(usuarios)
-
-    return usuarios # Adicionar ao usuário antigo sem conta a conta de usuario_com_conta
+    print(usuarios)
+    return usuarios
 
 main()
