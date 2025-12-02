@@ -33,14 +33,15 @@ def main():
         opcao = input(textwrap.dedent(menu))
 
         if opcao == "d":
-            deposito(saldo, extrato)        
+           saldo, extrato = deposito(saldo, extrato)        
 
         elif opcao == "s":
-            sacar(
+           saldo, extrato = sacar(
                 saldo=saldo, 
                 limite=limite, 
                 limite_saques=LIMITE_SAQUES, 
-                numero_saques=numero_saques
+                numero_saques=numero_saques,
+                extrato=extrato
             )
 
 
@@ -75,7 +76,7 @@ def deposito(saldo, extrato, /):
 
     return saldo, extrato
 
-def sacar(*, saldo, limite, numero_saques, limite_saques):
+def sacar(*, saldo, limite, numero_saques, limite_saques, extrato):
     valor = float(input("Informe o valor do saque: "))
 
     excedeu_saldo = valor > saldo
@@ -105,6 +106,8 @@ def sacar(*, saldo, limite, numero_saques, limite_saques):
     else:
         print("Operação falhou! O valor informado é inválido.")
         mensagem()
+
+    return saldo, extrato
 
 def mostrar_extrato(saldo, /, *, extrato):
     print(" EXTRATO ".center(50,"="))
