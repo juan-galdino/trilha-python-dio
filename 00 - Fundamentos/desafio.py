@@ -9,7 +9,7 @@ def main():
     extrato = ""
     numero_saques = 0
     LIMITE_SAQUES = 3
-    usuarios = [{'cpf': '2', 'nome': '', 'data_nascimento': '', 'endereco': ',  -  - /'}, {'cpf': '3', 'nome': '', 'data_nascimento': '', 'endereco': ',  -  - /'}]
+    usuarios = []
 
     menu = f"""
 
@@ -24,7 +24,6 @@ def main():
     [e] Extrato
     [c] Criar usuário
     [n] Nova Conta
-    [l] Listar Contas 
     [q] Sair
 
     => """
@@ -132,7 +131,6 @@ def cadastrar_usuarios(usuarios):
         usuarios.append(adiciona_usuario(cpf_check))
         return usuarios
 
-
 def adiciona_usuario(cpf):
     novo_usuario = {}
     logradouro = ""
@@ -156,7 +154,6 @@ def adiciona_usuario(cpf):
     return novo_usuario
 
 def nova_conta(usuarios):
-    print(usuarios)
     
     if not usuarios:
         print("\nNenhum usuário em nossa base, selecione a opção 'c' do menu para cadastrar um usuário.\n")
@@ -172,7 +169,9 @@ def nova_conta(usuarios):
             mensagem()
     else:
         for usuario in usuarios:
-            if usuario["cpf"] == cpf_check:
+            if usuario.get("cpf") != cpf_check:
+                continue
+            else:
                 lista_chaves = list(usuario.keys())
 
                 if "contas" not in lista_chaves:
@@ -191,7 +190,6 @@ def nova_conta(usuarios):
                     print(f"\nConta {numero_contas + 1} criada com sucesso!\n")
 
             break
-    print(usuarios)
     return usuarios
 
 main()
