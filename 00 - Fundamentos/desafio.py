@@ -10,6 +10,7 @@ def main():
     numero_saques = 0
     LIMITE_SAQUES = 3
     usuarios = []
+    contas = []
 
     menu = f"""
 
@@ -24,6 +25,7 @@ def main():
     [e] Extrato
     [c] Criar usuário
     [n] Nova Conta
+    [l] Listar Contas
     [q] Sair
 
     => """
@@ -52,7 +54,14 @@ def main():
             usuarios = cadastrar_usuarios(usuarios)
 
         elif opcao == "n":
-            usuarios = nova_conta(usuarios)
+            conta = nova_conta(usuarios)
+            if conta:
+                numero_conta = len(contas) + 1
+                conta["conta_corrente"] = numero_conta
+                contas.append(conta)
+
+        elif opcao == "l":
+            listar_contas(contas)
 
         elif opcao == "q":
             break
@@ -161,11 +170,12 @@ def nova_conta(usuarios):
     if not usuarios:
         print("\nNenhum usuário em nossa base, selecione a opção 'c' do menu para cadastrar um usuário.\n")
         mensagem()
-        return usuarios
-    
+        return
+
     agencia = "0001"
     cpf_check = input("Informe o CPF do usuário: ")
     lista_cpfs = [usuario["cpf"] for usuario in usuarios]
+    conta = {}
 
     if cpf_check not in lista_cpfs:
             print("\nNenhum usuário cadastrado com esse CPF.\n")
@@ -175,24 +185,28 @@ def nova_conta(usuarios):
             if usuario.get("cpf") != cpf_check:
                 continue
             else:
-                lista_chaves = list(usuario.keys())
-
-                if "contas" not in lista_chaves:
-                    usuario["contas"] = [{
-                        "conta": 1,
-                        "agencia": agencia
-                    }]
-                    print("\nConta 1 criada com sucesso!\n")
-                else:
-                    numero_contas = len(usuario.get("contas"))
-
-                    usuario["contas"].append({
-                        "conta": numero_contas + 1,
-                        "agencia": agencia
-                    })
-                    print(f"\nConta {numero_contas + 1} criada com sucesso!\n")
-
+                conta['agencia'] = agencia
+                conta['titular'] = usuario.get('nome')
+                print("\nConta nova criada com Sucesso!\n")
             break
-    return usuarios
+        return conta
 
+def listar_contas(contas):
+    if not contas:
+        print("\nNenhuma conta criada em nossa base. Após criar um usuário, crie sua nova conta!")
+
+    def texto(conta):
+        lista = f"""
+        ============================================================
+    
+        Agência:\t\t{conta['agencia']}
+        C/C:\t\t\t{conta['conta_corrente']}
+        Titular:\t\t{conta['titular']}
+
+        ============================================================
+        """
+        return lista
+    
+    for conta in contas:
+        print(textwrap.dedent(texto(conta)))
 main()
